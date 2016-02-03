@@ -20,6 +20,7 @@ import static com.google.common.collect.Iterables.any;
 import static com.google.common.collect.Iterables.isEmpty;
 import static com.google.common.hash.Hashing.md5;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.jclouds.chef.domain.RoleTest.verifyRunListForEnvironment;
 import static org.jclouds.util.Closeables2.closeQuietly;
 import static org.jclouds.util.Predicates2.retry;
 import static org.testng.Assert.assertEquals;
@@ -32,10 +33,8 @@ import static org.testng.Assert.fail;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -555,13 +554,5 @@ public class ChefApiLiveTest extends BaseChefLiveTest {
       } finally {
          closeQuietly(clientApi);
       }
-   }
-
-   private void verifyRunListForEnvironment(Map<String, List<String>> envRunList, String envName,
-         String... expectedEntries) {
-      assertTrue(envRunList.containsKey(envName), "envRunList contains " + envName);
-      assertEquals(envRunList.get(envName).size(), expectedEntries.length, "envRunList size for '" + envName);
-      assertTrue(envRunList.get(envName).containsAll(Arrays.asList(expectedEntries)), "envRunList for e1 contains "
-            + Arrays.asList(expectedEntries));
    }
 }

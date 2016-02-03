@@ -107,7 +107,7 @@ public class RoleTest {
       assertNotEquals(role2, role1, "role2 should not equal role1");
    }
 
-   private void verifyRunListForEnvironment(Map<String, List<String>> envRunList, String envName,
+   public static void verifyRunListForEnvironment(Map<String, List<String>> envRunList, String envName,
          String... expectedEntries) {
       assertTrue(envRunList.containsKey(envName), "envRunList contains " + envName);
       assertEquals(envRunList.get(envName).size(), expectedEntries.length, "envRunList size for '" + envName);
