@@ -32,8 +32,10 @@ import static org.testng.Assert.fail;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -243,12 +245,27 @@ public class ChefApiLiveTest extends BaseChefLiveTest {
 
    @Test
    public void testCreateRole() throws Exception {
+      String env1 = "env1";
+      String env2 = "env2";
+      String env1Alpha = "env1.alpha";
+      String env2Alpha = "env2.alpha";
+      String env2Bravo = "env2.bravo";
+
       api.deleteRole(PREFIX);
-      api.createRole(Role.builder().name(PREFIX).runListElement("recipe[java]").build());
+      api.createRole(Role.builder().name(PREFIX).runListElement("recipe[java]")
+            .envRunListElement(env1, env1Alpha)
+            .envRunListElement(env2, env2Alpha)
+            .envRunListElement(env2, env2Bravo)
+            .build());
       Role role = api.getRole(PREFIX);
       assertNotNull(role, "Created role should not be null");
       assertEquals(role.getName(), PREFIX);
       assertEquals(role.getRunList(), Collections.singleton("recipe[java]"));
+
+      assertNotNull(role.getEnvRunList(), "envRunList should not be null");
+      assertEquals(role.getEnvRunList().size(), 2, "envRunList.size should be 2");
+      verifyRunListForEnvironment(role.getEnvRunList(), env1, env1Alpha);
+      verifyRunListForEnvironment(role.getEnvRunList(), env2, env2Alpha, env2Bravo);
    }
 
    @Test(dependsOnMethods = "testCreateRole")
@@ -538,5 +555,13 @@ public class ChefApiLiveTest extends BaseChefLiveTest {
       } finally {
          closeQuietly(clientApi);
       }
+   }
+
+   private void verifyRunListForEnvironment(Map<String, List<String>> envRunList, String envName,
+         String... expectedEntries) {
+      assertTrue(envRunList.containsKey(envName), "envRunList contains " + envName);
+      assertEquals(envRunList.get(envName).size(), expectedEntries.length, "envRunList size for '" + envName);
+      assertTrue(envRunList.get(envName).containsAll(Arrays.asList(expectedEntries)), "envRunList for e1 contains "
+            + Arrays.asList(expectedEntries));
    }
 }

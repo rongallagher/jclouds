@@ -95,7 +95,7 @@ public class RoleTest {
       assertEquals(role2, role1, "role2 should equal role1");
    }
 
-   public void rolesWithDifferentEnvRunListAreEqual() {
+   public void rolesWithDifferentEnvRunListAreNotEqual() {
       String env = "env";
       String entry = "entry";
 

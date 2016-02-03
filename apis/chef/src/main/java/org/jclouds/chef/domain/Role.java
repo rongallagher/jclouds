@@ -24,13 +24,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.jclouds.domain.JsonBall;
 import org.jclouds.javax.annotation.Nullable;
 
+import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -116,15 +117,16 @@ public class Role {
 
       public Role build() {
          // Assemble an immutable envRunList where each entry is an immutable list of entries.
-         ImmutableMap.Builder<String, List<String>> immutableEnvRunList = ImmutableMap.builder();
-         for (Entry<String, List<String>> e : envRunList.entrySet()) {
-            ImmutableList.Builder<String> value = ImmutableList.builder();
-            value.addAll(e.getValue());
-            immutableEnvRunList.put(e.getKey(), value.build());
-         }
+         Map<String, List<String>> immutableEnvRunList = Maps.transformValues(envRunList,
+               new Function<List<String>, List<String>>() {
+                  @Override
+                  public List<String> apply(List<String> input) {
+                     return ImmutableList.copyOf(input);
+                  }
+               });
          
          return new Role(name, description, defaultAttributes.build(), runList.build(), overrideAttributes.build(), 
-               immutableEnvRunList.build());
+               immutableEnvRunList);
       }
    }
 
